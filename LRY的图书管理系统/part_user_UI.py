@@ -246,7 +246,27 @@ class UserWindow(object):
         None  # TODO
     
     def part3(self):
-        None  # TODO
+        books = self.lineEdit_2.text()
+        if len(books) == 0:
+            self.textBrowser.setText("")
+            self.textBrowser.repaint()
+            sleep(0.1)
+            self.textBrowser.setText("书籍信息未填写, 请继续输入!")
+            self.textBrowser.repaint()
+        else:
+            con = connect(host = 'localhost', 
+                          user = 'root', 
+                          passwd='1qaz!QAZ', 
+                          port= 3306, 
+                          db='library', 
+                          charset='utf8')
+            cur = con.cursor()
+            sql = "select * from book_have where id = '%s'" % (books)
+            cur.execute(sql)
+            values_id = cur.fetchall()
+            sql = "select * from book_have where name = '%s'" % (books)
+            cur.execute(sql)
+            values_name = cur.fetchall()
     
     def part4(self):
         None  # TODO

@@ -1,6 +1,7 @@
 from bcrypt import *
 from pymysql import *
 from random import *
+from part_user import *
 from PyQt5 import QtCore, QtGui, QtWidgets
 class LoginWindow(object):
     def setupUi(self, Form):
@@ -179,7 +180,8 @@ class LoginWindow(object):
                         cur.close() 
                         con.close()
                         self.hide()
-                        print("用户 %s 您好!" % (name))
+                        self.new_window = UWindow(values[0][0])
+                        self.new_window.show()
             elif len(phonenumber) != 11:
                 self.textBrowser.setText("手机号输入错误, 请重新输入!")
                 self.textBrowser.repaint()

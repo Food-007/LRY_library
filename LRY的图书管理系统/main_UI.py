@@ -3,6 +3,7 @@ from pymysql import *
 from random import *
 from part_connect import *
 from part_admin import *
+from part_user import *
 from PyQt5 import QtWidgets, QtCore, QtGui
 class MainWindow(object):
     def setupUi(self, Form):
@@ -136,7 +137,9 @@ class MainWindow(object):
                         self.new_window = AWindow(values[0][0])
                         self.new_window.show()
                     else:
-                        None  #TODO
+                        self.hide()
+                        self.new_window = UWindow(values[0][0])
+                        self.new_window.show()
                 else:
                     self.textBrowser.setText("账号或密码错误, 请重新输入!")
                     self.textBrowser.repaint()
