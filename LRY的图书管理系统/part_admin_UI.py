@@ -1,4 +1,5 @@
 from pymysql import *
+from time import *
 from PyQt5 import QtCore, QtGui, QtWidgets
 class AdminWindow(object):
     def setupUi(self, Form, name):
@@ -102,6 +103,67 @@ class AdminWindow(object):
         self.spinBox.setMaximum(100)
         self.spinBox.setObjectName("spinBox")
         self.tabWidget.addTab(self.tab, "")
+        self.tab_7 = QtWidgets.QWidget()
+        self.tab_7.setObjectName("tab_7")
+        self.label_12 = QtWidgets.QLabel(self.tab_7)
+        self.label_12.setGeometry(QtCore.QRect(20, 20, 151, 31))
+        font = QtGui.QFont()
+        font.setFamily("微软雅黑")
+        font.setPointSize(14)
+        self.label_12.setFont(font)
+        self.label_12.setObjectName("label_12")
+        self.lineEdit_10 = QtWidgets.QLineEdit(self.tab_7)
+        self.lineEdit_10.setGeometry(QtCore.QRect(170, 20, 251, 31))
+        font = QtGui.QFont()
+        font.setFamily("微软雅黑")
+        font.setPointSize(14)
+        self.lineEdit_10.setFont(font)
+        self.lineEdit_10.setObjectName("lineEdit_10")
+        self.textBrowser_7 = QtWidgets.QTextBrowser(self.tab_7)
+        self.textBrowser_7.setGeometry(QtCore.QRect(460, 10, 711, 251))
+        font = QtGui.QFont()
+        font.setFamily("微软雅黑")
+        font.setPointSize(10)
+        self.textBrowser_7.setFont(font)
+        self.textBrowser_7.setObjectName("textBrowser_7")
+        self.label_13 = QtWidgets.QLabel(self.tab_7)
+        self.label_13.setGeometry(QtCore.QRect(60, 70, 101, 31))
+        font = QtGui.QFont()
+        font.setFamily("微软雅黑")
+        font.setPointSize(14)
+        self.label_13.setFont(font)
+        self.label_13.setObjectName("label_13")
+        self.lineEdit_11 = QtWidgets.QLineEdit(self.tab_7)
+        self.lineEdit_11.setGeometry(QtCore.QRect(170, 70, 251, 31))
+        font = QtGui.QFont()
+        font.setFamily("微软雅黑")
+        font.setPointSize(14)
+        self.lineEdit_11.setFont(font)
+        self.lineEdit_11.setObjectName("lineEdit_11")
+        self.label_14 = QtWidgets.QLabel(self.tab_7)
+        self.label_14.setGeometry(QtCore.QRect(80, 120, 91, 31))
+        font = QtGui.QFont()
+        font.setFamily("微软雅黑")
+        font.setPointSize(14)
+        self.label_14.setFont(font)
+        self.label_14.setObjectName("label_14")
+        self.spinBox_3 = QtWidgets.QSpinBox(self.tab_7)
+        self.spinBox_3.setGeometry(QtCore.QRect(170, 120, 131, 31))
+        font = QtGui.QFont()
+        font.setFamily("微软雅黑")
+        font.setPointSize(14)
+        self.spinBox_3.setFont(font)
+        self.spinBox_3.setMaximum(999)
+        self.spinBox_3.setMinimum(1)
+        self.spinBox_3.setObjectName("spinBox_3")
+        self.pushButton_7 = QtWidgets.QPushButton(self.tab_7)
+        self.pushButton_7.setGeometry(QtCore.QRect(190, 220, 75, 28))
+        font = QtGui.QFont()
+        font.setFamily("微软雅黑")
+        font.setPointSize(11)
+        self.pushButton_7.setFont(font)
+        self.pushButton_7.setObjectName("pushButton_7")
+        self.tabWidget.addTab(self.tab_7, "")
         self.tab_6 = QtWidgets.QWidget()
         self.tab_6.setObjectName("tab_6")
         self.label_8 = QtWidgets.QLabel(self.tab_6)
@@ -284,6 +346,7 @@ class AdminWindow(object):
         _translate = QtCore.QCoreApplication.translate
         Form.setWindowTitle(_translate("Form", "管理员 %s 您好!" % (self.name)))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("Form", "图书录入"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_7), _translate("Form", "图书续借"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_6), _translate("Form", "图书归还"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_4), _translate("Form", "图书删除"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("Form", "图书查询"))
@@ -301,6 +364,9 @@ class AdminWindow(object):
         self.label_9.setText(_translate("Form", "借书人信息:"))
         self.label_10.setText(_translate("Form", "书籍数量:"))
         self.label_11.setText(_translate("Form", "书籍数量:"))
+        self.label_12.setText(_translate("Form", "书籍条形码/名称:"))
+        self.label_13.setText(_translate("Form", "借书人信息:"))
+        self.label_14.setText(_translate("Form", "借书编号:"))
         self.textBrowser_2.setHtml(_translate("Form", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
@@ -333,12 +399,14 @@ class AdminWindow(object):
         self.pushButton_4.setText(_translate("Form", "删除"))
         self.pushButton_5.setText(_translate("Form", "开始检查"))
         self.pushButton_6.setText(_translate("Form", "确认"))
+        self.pushButton_7.setText(_translate("Form", "确认"))
         self.pushButton.clicked.connect(self.part)
         self.pushButton_2.clicked.connect(self.part2)
         self.pushButton_3.clicked.connect(self.part3)
         self.pushButton_4.clicked.connect(self.part4)
         self.pushButton_5.clicked.connect(self.part5)
         self.pushButton_6.clicked.connect(self.part6)
+        self.pushButton_7.clicked.connect(self.part7)
     
     def part(self):
         bookid = self.lineEdit.text()
@@ -347,6 +415,9 @@ class AdminWindow(object):
         bookwriter = self.lineEdit_4.text()
         booknum = self.spinBox.value()
         if len(bookid) == 0 or len(bookname) == 0 or len(bookclass) == 0 or len(bookwriter) == 0:
+            self.textBrowser.setText("")
+            self.textBrowser.repaint()
+            sleep(0.1)
             self.textBrowser.setText("书籍信息未填写, 请继续输入!")
             self.textBrowser.repaint()
         else:
@@ -366,21 +437,33 @@ class AdminWindow(object):
                 con.commit()
                 cur.close()
                 con.close()
+                self.textBrowser.setText("")
+                self.textBrowser.repaint()
+                sleep(0.1)
                 self.textBrowser.setText("是新书籍 录入成功!")
                 self.textBrowser.repaint()
             elif values[0][1] != bookname:
                 cur.close()
                 con.close()
+                self.textBrowser.setText("")
+                self.textBrowser.repaint()
+                sleep(0.1)
                 self.textBrowser.setText("是已有书籍 录入失败! 请检查书籍条形码是否与书籍名相匹配")
                 self.textBrowser.repaint()
             elif values[0][2] != bookclass:
                 cur.close()
                 con.close()
+                self.textBrowser.setText("")
+                self.textBrowser.repaint()
+                sleep(0.1)
                 self.textBrowser.setText("是已有书籍 录入失败! 请检查书籍是否与书籍类型相匹配")
                 self.textBrowser.repaint()
             elif values[0][3] != bookwriter:
                 cur.close()
                 con.close()
+                self.textBrowser.setText("")
+                self.textBrowser.repaint()
+                sleep(0.1)
                 self.textBrowser.setText("是已有书籍 录入失败! 请检查书籍是否与书籍作者相匹配")
                 self.textBrowser.repaint()
             else:
@@ -389,12 +472,18 @@ class AdminWindow(object):
                 con.commit()
                 cur.close()
                 con.close()
+                self.textBrowser.setText("")
+                self.textBrowser.repaint()
+                sleep(0.1)
                 self.textBrowser.setText("是已有书籍 录入成功!")
                 self.textBrowser.repaint()
 
     def part2(self):
         books = self.lineEdit_5.text()
         if len(books) == 0:
+            self.textBrowser_2.setText("")
+            self.textBrowser_2.repaint()
+            sleep(0.1)
             self.textBrowser_2.setText("书籍信息未填写, 请继续输入!")
             self.textBrowser_2.repaint()
         else:
@@ -448,9 +537,15 @@ class AdminWindow(object):
                     text += "书籍条形码: %s, 书籍名称: %s, 书籍类型: %s, 作者: %s, 书籍数量: %d, 馆内书籍数量: %d, 被借出书籍数量: %d\n" % (x[0], x[1], x[2], x[3], x[4], x[5], x[6])
                 key = False
             if key:
+                self.textBrowser_2.setText("")
+                self.textBrowser_2.repaint()
+                sleep(0.1)
                 self.textBrowser_2.setText("未查询到匹配项!")
                 self.textBrowser_2.repaint()
             else:
+                self.textBrowser_2.setText(" ")
+                self.textBrowser_2.repaint()
+                sleep(0.1)
                 self.textBrowser_2.setText(text)
                 self.textBrowser_2.repaint()
 
@@ -461,6 +556,9 @@ class AdminWindow(object):
         books = self.lineEdit_7.text()
         booknum = self.spinBox_2.value()
         if len(books) == 0:
+            self.textBrowser_4.setText("")
+            self.textBrowser_4.repaint()
+            sleep(0.1)
             self.textBrowser_4.setText("书籍信息未填写, 请继续输入!")
             self.textBrowser_4.repaint()
         else:
@@ -486,9 +584,15 @@ class AdminWindow(object):
                     cur.close()
                     con.close()
                     if values_id[0][6] != 0:
+                        self.textBrowser_4.setText("")
+                        self.textBrowser_4.repaint()
+                        sleep(0.1)
                         self.textBrowser_4.setText("删除成功! 图书馆内还有该书 %d 本, 还有 %d 本被借走" % (values_id[0][5]-booknum, values_id[0][6]))
                         self.textBrowser_4.repaint()
                     else:
+                        self.textBrowser_4.setText("")
+                        self.textBrowser_4.repaint()
+                        sleep(0.1)
                         self.textBrowser_4.setText("删除成功! 图书馆内还有该书 %d 本, 没有该书被借走" % (values_id[0][5]-booknum))
                         self.textBrowser_4.repaint()
                     key = False
@@ -498,6 +602,9 @@ class AdminWindow(object):
                     con.commit()
                     cur.close()
                     con.close()
+                    self.textBrowser_4.setText("")
+                    self.textBrowser_4.repaint()
+                    sleep(0.1)
                     self.textBrowser_4.setText("删除成功! 图书馆内已没有该书, 但还有 %d 本被借走" % (values_id[0][6]))
                     self.textBrowser_4.repaint()
                     key = False
@@ -507,6 +614,9 @@ class AdminWindow(object):
                     con.commit()
                     cur.close()
                     con.close()
+                    self.textBrowser_4.setText("")
+                    self.textBrowser_4.repaint()
+                    sleep(0.1)
                     self.textBrowser_4.setText("删除成功! 图书馆内已没有该书所有记录")
                     self.textBrowser_4.repaint()
                     key = False
@@ -518,9 +628,15 @@ class AdminWindow(object):
                     cur.close()
                     con.close()
                     if values_name[0][6] != 0:
+                        self.textBrowser_4.setText("")
+                        self.textBrowser_4.repaint()
+                        sleep(0.1)
                         self.textBrowser_4.setText("删除成功! 图书馆内还有该书 %d 本, 还有 %d 本被借走" % (values_name[0][5]-booknum, values_name[0][6]))
                         self.textBrowser_4.repaint()
                     else:
+                        self.textBrowser_4.setText("")
+                        self.textBrowser_4.repaint()
+                        sleep(0.1)
                         self.textBrowser_4.setText("删除成功! 图书馆内还有该书 %d 本, 没有该书被借走" % (values_name[0][5]-booknum))
                         self.textBrowser_4.repaint()
                     key = False
@@ -530,6 +646,9 @@ class AdminWindow(object):
                     con.commit()
                     cur.close()
                     con.close()
+                    self.textBrowser_4.setText("")
+                    self.textBrowser_4.repaint()
+                    sleep(0.1)
                     self.textBrowser_4.setText("删除成功! 图书馆内已没有该书, 但还有 %d 本被借走" % (values_name[0][6]))
                     self.textBrowser_4.repaint()
                     key = False
@@ -539,12 +658,18 @@ class AdminWindow(object):
                     con.commit()
                     cur.close()
                     con.close()
+                    self.textBrowser_4.setText("")
+                    self.textBrowser_4.repaint()
+                    sleep(0.1)
                     self.textBrowser_4.setText("删除成功! 图书馆内已没有该书所有记录")
                     self.textBrowser_4.repaint()
                     key = False
             if key:
                 cur.close()
                 con.close()
+                self.textBrowser_4.setText("")
+                self.textBrowser_4.repaint()
+                sleep(0.1)
                 self.textBrowser_4.setText("删除失败! 图书馆内没有该书所有记录")
                 self.textBrowser_4.repaint()
 
@@ -552,4 +677,6 @@ class AdminWindow(object):
         None  # TODO
 
     def part6(self):
+        None  # TODO
+    def part7(self):
         None  # TODO
