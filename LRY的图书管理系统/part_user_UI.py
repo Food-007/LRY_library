@@ -153,7 +153,7 @@ class UserWindow(object):
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'微软雅黑\',\'微软雅黑\'; font-size:10pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'微软雅黑\';\">注: 一个人最多可借阅12本书籍, 不能借阅多本一样的书籍  超时一天, 罚款一毛  超时1年判定书籍丢失,可降低借书人的社会信誉值, 若最终归还书籍并缴纳罚款可归还借书人的社会信誉值</span></p></body></html>"))
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'微软雅黑\';\">注: 一个人最多可借阅12本书籍, 不能借阅多本一样的书籍, 可以去图书管理员处续借  超时一天, 罚款一毛  超时1年判定书籍丢失,可降低借书人的社会信誉值, 若最终归还书籍并缴纳罚款可归还借书人的社会信誉值</span></p></body></html>"))
         self.textBrowser_4.setHtml(_translate("Form", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
