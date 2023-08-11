@@ -180,7 +180,7 @@ class LoginWindow(object):
                         cur.close() 
                         con.close()
                         self.hide()
-                        self.new_window = UWindow(values[0][0])
+                        self.new_window = UWindow(name)
                         self.new_window.show()
             elif len(phonenumber) != 11:
                 self.textBrowser.setText("手机号输入错误, 请重新输入!")

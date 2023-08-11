@@ -1,5 +1,6 @@
 from pymysql import *
 from time import *
+from datetime import *
 from PyQt5 import QtCore, QtGui, QtWidgets
 class UserWindow(object):
     def setupUi(self, Form, name):
@@ -248,11 +249,11 @@ class UserWindow(object):
     def part3(self):
         books = self.lineEdit_2.text()
         if len(books) == 0:
-            self.textBrowser.setText("")
-            self.textBrowser.repaint()
+            self.textBrowser_3.setText("")
+            self.textBrowser_3.repaint()
             sleep(0.1)
-            self.textBrowser.setText("书籍信息未填写, 请继续输入!")
-            self.textBrowser.repaint()
+            self.textBrowser_3.setText("书籍信息未填写, 请继续输入!")
+            self.textBrowser_3.repaint()
         else:
             con = connect(host = 'localhost', 
                           user = 'root', 
@@ -261,13 +262,98 @@ class UserWindow(object):
                           db='library', 
                           charset='utf8')
             cur = con.cursor()
-            sql = "select * from book_have where id = '%s'" % (books)
+            sql = "select * from book_history where people_name = '%s'" % (self.name)
             cur.execute(sql)
-            values_id = cur.fetchall()
-            sql = "select * from book_have where name = '%s'" % (books)
-            cur.execute(sql)
-            values_name = cur.fetchall()
-    
+            values_people = cur.fetchall()
+            num = 0
+            i = 0
+            same = False
+            for x in values_people:
+                num += 1
+                sql = "select datediff(finish_borrow, now()) from library.book_history;"
+                cur.execute(sql)
+                values_borrow = cur.fetchall()
+                if values_borrow[0][0] < 0:
+                    i += 1
+            for x in values_people:
+                if x[1] == books:
+                    same = True
+            if i >= 1:
+                cur.close()
+                con.close()
+                self.textBrowser_3.setText("")
+                self.textBrowser_3.repaint()
+                sleep(0.1)
+                self.textBrowser_3.setText("您有 %d 本超时书籍, 请先归还超时书籍再借阅!" % (i))
+                self.textBrowser_3.repaint()
+            elif same:
+                cur.close()
+                con.close()
+                self.textBrowser_3.setText("")
+                self.textBrowser_3.repaint()
+                sleep(0.1)
+                self.textBrowser_3.setText("您已借阅过该书, 若要续借清到图书管理员处办理!")
+                self.textBrowser_3.repaint()
+            elif num <= 11:
+                sql = "select * from book_have where id = '%s'" % (books)
+                cur.execute(sql)
+                values_id = cur.fetchall()
+                key = True
+                if values_id != ():
+                    if values_id[0][5] == 0:
+                        self.textBrowser_3.setText("")
+                        self.textBrowser_3.repaint()
+                        sleep(0.1)
+                        self.textBrowser_3.setText("抱歉, 该书籍已被借光!")
+                        self.textBrowser_3.repaint()
+                        cur.close()
+                        con.close()
+                    else:
+                        sql = "select max(booklose_id) from book_history where book_id = '%s'" % (books)
+                        cur.execute(sql)
+                        values_lose_id = cur.fetchall()
+                        if values_lose_id != ((None,),):
+                            sql = "insert into book_history values('%s', '%s', '%s', now(), date_add(now(), interval 90 day), %d)" % (self.name, values_id[0][0], values_id[0][1], values_lose_id[0][0]+1)
+                            cur.execute(sql)
+                            con.commit()
+                            sql = "select finish_borrow from book_history where booklose_id = %d and book_id = '%s'" % (values_lose_id[0][0] + 1, books)
+                            cur.execute(sql)
+                            values_finish_borrow = cur.fetchall()
+                            v = values_lose_id[0][0] + 1
+                        else:
+                            sql = "insert into book_history values('%s', '%s', '%s', now(), date_add(now(), interval 90 day), %d)" % (self.name, values_id[0][0], values_id[0][1], 1)
+                            cur.execute(sql)
+                            con.commit()
+                            sql = "select finish_borrow from book_history where booklose_id = %d and book_id = '%s'" % (1, books)
+                            cur.execute(sql)
+                            values_finish_borrow = cur.fetchall()
+                            v = 1
+                        sql = "update book_have set bookget = %d, booklose = %d where id = '%s';" % (values_id[0][5]-1, values_id[0][6]+1, books)
+                        cur.execute(sql)
+                        con.commit()
+                        self.textBrowser_3.setText("")
+                        self.textBrowser_3.repaint()
+                        sleep(0.1)
+                        values_finish_borrow = values_finish_borrow[0][0].strftime('%Y-%m-%d')
+                        self.textBrowser_3.setText("借书成功! 该书籍应在 %s 之前归还, 书籍编码为: %d" % (values_finish_borrow, v))
+                        self.textBrowser_3.repaint()
+                        cur.execute(sql)
+                        con.commit()
+                    key = False
+                if key:
+                    self.textBrowser_3.setText("")
+                    self.textBrowser_3.repaint()
+                    sleep(0.1)
+                    self.textBrowser_3.setText("该书籍不存在, 或书籍信息填写错误, 请重新输入!")
+                    self.textBrowser_3.repaint()
+            else:
+                cur.close()
+                con.close()
+                self.textBrowser_3.setText("")
+                self.textBrowser_3.repaint()
+                sleep(0.1)
+                self.textBrowser_3.setText("您的借阅书籍数量已达到上限, 请先归还部分书籍再借阅!")
+                self.textBrowser_3.repaint()
+
     def part4(self):
         None  # TODO
-    
