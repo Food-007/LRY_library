@@ -73,14 +73,14 @@ class UserWindow(object):
         self.textBrowser_3.setFont(font)
         self.textBrowser_3.setObjectName("textBrowser_3")
         self.label_2 = QtWidgets.QLabel(self.tab_3)
-        self.label_2.setGeometry(QtCore.QRect(20, 20, 151, 31))
+        self.label_2.setGeometry(QtCore.QRect(20, 20, 101, 31))
         font = QtGui.QFont()
         font.setFamily("微软雅黑")
         font.setPointSize(14)
         self.label_2.setFont(font)
         self.label_2.setObjectName("label_2")
         self.lineEdit_2 = QtWidgets.QLineEdit(self.tab_3)
-        self.lineEdit_2.setGeometry(QtCore.QRect(170, 20, 261, 31))
+        self.lineEdit_2.setGeometry(QtCore.QRect(130, 20, 301, 31))
         font = QtGui.QFont()
         font.setFamily("微软雅黑")
         font.setPointSize(14)
@@ -112,7 +112,7 @@ class UserWindow(object):
         self.label_3.setFont(font)
         self.label_3.setObjectName("label_3")
         self.lineEdit_3 = QtWidgets.QLineEdit(self.tab_4)
-        self.lineEdit_3.setGeometry(QtCore.QRect(170, 20, 261, 31))
+        self.lineEdit_3.setGeometry(QtCore.QRect(130, 20, 301, 31))
         font = QtGui.QFont()
         font.setFamily("微软雅黑")
         font.setPointSize(14)
@@ -129,7 +129,7 @@ class UserWindow(object):
         self.tabWidget.addTab(self.tab_4, "")
 
         self.retranslateUi(Form)
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(2)
         QtCore.QMetaObject.connectSlotsByName(Form)
 
     def retranslateUi(self, Form):
@@ -161,8 +161,8 @@ class UserWindow(object):
 "</style></head><body style=\" font-family:\'微软雅黑\',\'微软雅黑\'; font-size:10pt; font-weight:400; font-style:normal;\">\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'微软雅黑\';\">注: 超时一天, 罚款一毛  超时1年判定书籍丢失,可降低借书人的社会信誉值, 若最终归还书籍并缴纳罚款可归还借书人的社会信誉值</span></p></body></html>"))
         self.label.setText(_translate("Form", "书籍信息:"))
-        self.label_2.setText(_translate("Form", "书籍条形码/书名:"))
-        self.label_3.setText(_translate("Form", "书籍条形码/书名:"))
+        self.label_2.setText(_translate("Form", "书籍条形码:"))
+        self.label_3.setText(_translate("Form", "书籍条形码:"))
         self.pushButton.setText(_translate("Form", "查询"))
         self.pushButton_2.setText(_translate("Form", "查询"))
         self.pushButton_3.setText(_translate("Form", "确认"))
@@ -316,7 +316,7 @@ class UserWindow(object):
             same = False
             for x in values_people:
                 num += 1
-                sql = "select datediff(finish_borrow, now()) from library.book_history where people = '%s';" % (self.name)
+                sql = "select datediff(finish_borrow, now()) from book_history where people_name = '%s';" % (self.name)
                 cur.execute(sql)
                 values_borrow = cur.fetchall()
                 if values_borrow[0][0] < 0:
@@ -325,16 +325,12 @@ class UserWindow(object):
                 if x[1] == books:
                     same = True
             if i >= 1:
-                cur.close()
-                con.close()
                 self.textBrowser_3.setText("")
                 self.textBrowser_3.repaint()
                 sleep(0.1)
                 self.textBrowser_3.setText("您有 %d 本超时书籍, 请先归还超时书籍再借阅!" % (i))
                 self.textBrowser_3.repaint()
             elif same:
-                cur.close()
-                con.close()
                 self.textBrowser_3.setText("")
                 self.textBrowser_3.repaint()
                 sleep(0.1)
@@ -344,7 +340,6 @@ class UserWindow(object):
                 sql = "select * from book_have where id = '%s'" % (books)
                 cur.execute(sql)
                 values_id = cur.fetchall()
-                key = True
                 if values_id != ():
                     if values_id[0][5] == 0:
                         self.textBrowser_3.setText("")
@@ -352,8 +347,6 @@ class UserWindow(object):
                         sleep(0.1)
                         self.textBrowser_3.setText("抱歉, 该书籍已被借光!")
                         self.textBrowser_3.repaint()
-                        cur.close()
-                        con.close()
                     else:
                         sql = "select max(booklose_id) from book_history where book_id = '%s'" % (books)
                         cur.execute(sql)
@@ -383,23 +376,73 @@ class UserWindow(object):
                         values_finish_borrow = values_finish_borrow[0][0].strftime('%Y-%m-%d')
                         self.textBrowser_3.setText("借书成功! 该书籍应在 %s 之前归还, 书籍编码为: %d" % (values_finish_borrow, v))
                         self.textBrowser_3.repaint()
-                        cur.execute(sql)
-                        con.commit()
-                    key = False
-                if key:
+                else:
                     self.textBrowser_3.setText("")
                     self.textBrowser_3.repaint()
                     sleep(0.1)
                     self.textBrowser_3.setText("该书籍不存在, 或书籍信息填写错误, 请重新输入!")
                     self.textBrowser_3.repaint()
             else:
-                cur.close()
-                con.close()
                 self.textBrowser_3.setText("")
                 self.textBrowser_3.repaint()
                 sleep(0.1)
                 self.textBrowser_3.setText("您的借阅书籍数量已达到上限, 请先归还部分书籍再借阅!")
                 self.textBrowser_3.repaint()
+            cur.close()
+            con.close()
 
     def part4(self):
-        None  # TODO
+        books = self.lineEdit_3.text()
+        if len(books) == 0:
+            self.textBrowser_4.setText("")
+            self.textBrowser_4.repaint()
+            sleep(0.1)
+            self.textBrowser_4.setText("书籍信息未填写, 请继续输入!")
+            self.textBrowser_4.repaint()
+        else:
+            con = connect(host = 'localhost', 
+                          user = 'root', 
+                          passwd='1qaz!QAZ', 
+                          port= 3306, 
+                          db='library', 
+                          charset='utf8')
+            cur = con.cursor()
+            sql = "select book_id from book_history where people_name = '%s'" % (self.name)
+            cur.execute(sql)
+            values_have = cur.fetchall()
+            have = []
+            for x in values_have:
+                have.append(x[0])
+            sql = "select * from book_have where id = '%s'" % (books)
+            cur.execute(sql)
+            values_id = cur.fetchall()
+            if books in have:
+                sql = "select datediff(finish_borrow, now()) from book_history where people_name = '%s' and book_id = '%s';" % (self.name, books)
+                cur.execute(sql)
+                values_borrow = cur.fetchall()
+                if values_borrow[0][0] >= 0:
+                    sql = "delete from book_history where people_name = '%s' and book_id = '%s'" % (self.name, books)
+                    cur.execute(sql)
+                    con.commit()
+                    sql = "update book_have set bookget = %d, booklose = %d where id = '%s';" % (values_id[0][5]+1, values_id[0][6]-1, books)
+                    cur.execute(sql)
+                    con.commit()
+                    self.textBrowser_4.setText("")
+                    self.textBrowser_4.repaint()
+                    sleep(0.1)
+                    self.textBrowser_4.setText("还书成功!")
+                    self.textBrowser_4.repaint()
+                else:
+                    self.textBrowser_4.setText("")
+                    self.textBrowser_4.repaint()
+                    sleep(0.1)
+                    self.textBrowser_4.setText("还书失败, 该书已超时, 请到图书管理员处归还并缴纳罚款")
+                    self.textBrowser_4.repaint()
+            else:
+                self.textBrowser_4.setText("")
+                self.textBrowser_4.repaint()
+                sleep(0.1)
+                self.textBrowser_4.setText("该书籍您未借阅, 或书籍信息填写错误, 请重新输入!")
+                self.textBrowser_4.repaint()
+            cur.close()
+            con.close()

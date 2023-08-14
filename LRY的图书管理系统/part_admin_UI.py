@@ -360,8 +360,8 @@ class AdminWindow(object):
         self.label_4.setText(_translate("Form", "书籍类型:"))
         self.label_5.setText(_translate("Form", "书籍信息:"))
         self.label_6.setText(_translate("Form", "借书人信息:"))
-        self.label_7.setText(_translate("Form", "书籍条形码/名称:"))
-        self.label_8.setText(_translate("Form", "书籍条形码/名称:"))
+        self.label_7.setText(_translate("Form", "唯一 书籍条形码:"))
+        self.label_8.setText(_translate("Form", "唯一 书籍条形码:"))
         self.label_9.setText(_translate("Form", "借书人信息:"))
         self.label_10.setText(_translate("Form", "书籍数量:"))
         self.label_11.setText(_translate("Form", "书籍数量:"))
@@ -551,7 +551,93 @@ class AdminWindow(object):
                 self.textBrowser_2.repaint()
 
     def part3(self):
-        None  # TODO
+        peoples = self.lineEdit_6.text()
+        con = connect(host = 'localhost', 
+                      user = 'root', 
+                      passwd='1qaz!QAZ', 
+                      port= 3306, 
+                      db='library', 
+                      charset='utf8')
+        cur = con.cursor()
+        sql = "select book_id, booklose_id from book_history where people_name = '%s';" % (peoples)
+        cur.execute(sql)
+        values_name = cur.fetchall()
+        sql = "select name from user where phonenumber = '%s';" % (peoples)
+        cur.execute(sql)
+        values_people = cur.fetchall()
+        overover = True
+        l = 0
+        text = ""
+        if values_name != ():
+            for x in values_name:
+                over = True
+                l += 1
+                sql = "select id, name, class, writer from book_have where id = '%s';" % (x[0])
+                cur.execute(sql)
+                books = cur.fetchall()
+                sql = "select datediff(finish_borrow, now()) from library.book_history where people_name = '%s' and book_id = '%s';" % (peoples, books[0][0])
+                cur.execute(sql)
+                book_over = cur.fetchall()
+                if book_over[0][0] < 0:
+                    over = False
+                if over:
+                    text += "书籍条形码: %s, 书籍名称: %s, 书籍类型: %s, 作者: %s, 借书编号: %d, 状态: 未超时, 剩余 %d天应归还\n"  % (books[0][0], books[0][1], books[0][2], books[0][3], x[1], book_over[0][0])
+                else:
+                    text += "书籍条形码: %s, 书籍名称: %s, 书籍类型: %s, 作者: %s, 借书编号: %d, 状态: 已超时, 应缴纳罚款 %.1f元\n"  % (books[0][0], books[0][1], books[0][2], books[0][3], x[1], abs(book_over[0][0]/10))
+                    overover = False
+            if overover:
+                text += "已借书 %d本, 还能借书 %d本" % (l, 12-l)
+            else:
+                text += "已借书 %d本, 有逾期未归还书籍" % (l)
+            self.textBrowser_3.setText(" ")
+            self.textBrowser_3.repaint()
+            sleep(0.1)
+            self.textBrowser_3.setText(text)
+            self.textBrowser_3.repaint()
+        elif values_people != ():
+            sql = "select book_id, booklose_id from book_history where people_name = '%s';" % (values_people[0][0])
+            cur.execute(sql)
+            values_name = cur.fetchall()
+            if values_name != ():
+                for x in values_name:
+                    over = True
+                    l += 1
+                    sql = "select id, name, class, writer from book_have where id = '%s';" % (x[0])
+                    cur.execute(sql)
+                    books = cur.fetchall()
+                    sql = "select datediff(finish_borrow, now()) from book_history where people_name = '%s' and book_id = '%s';" % (values_people[0][0], books[0][0])
+                    cur.execute(sql)
+                    book_over = cur.fetchall()
+                    if book_over[0][0] < 0:
+                        over = False
+                    if over:
+                        text += "书籍条形码: %s, 书籍名称: %s, 书籍类型: %s, 作者: %s, 借书编号: %d, 状态: 未超时, 剩余 %d天应归还\n"  % (books[0][0], books[0][1], books[0][2], books[0][3], x[1], book_over[0][0])
+                    else:
+                        text += "书籍条形码: %s, 书籍名称: %s, 书籍类型: %s, 作者: %s, 借书编号: %d, 状态: 已超时, 应缴纳罚款 %.1f元\n"  % (books[0][0], books[0][1], books[0][2], books[0][3], x[1], abs(book_over[0][0]/10))
+                        overover = False
+                if overover:
+                    text += "已借书 %d本, 还能借书 %d本" % (l, 12-l)
+                else:
+                    text += "已借书 %d本, 有逾期未归还书籍" % (l)
+                self.textBrowser_3.setText(" ")
+                self.textBrowser_3.repaint()
+                sleep(0.1)
+                self.textBrowser_3.setText(text)
+                self.textBrowser_3.repaint()
+            else:
+                self.textBrowser_3.setText("")
+                self.textBrowser_3.repaint()
+                sleep(0.1)
+                self.textBrowser_3.setText("目前没有借阅书籍!")
+                self.textBrowser_3.repaint()
+        else:
+            self.textBrowser_3.setText("")
+            self.textBrowser_3.repaint()
+            sleep(0.1)
+            self.textBrowser_3.setText("目前没有借阅书籍, 或输入信息错误!")
+            self.textBrowser_3.repaint()
+        cur.close()
+        con.close()
 
     def part4(self):
         books = self.lineEdit_7.text()
@@ -724,7 +810,61 @@ class AdminWindow(object):
             self.textBrowser_5.repaint()
 
     def part6(self):
-        None  # TODO
+        books = self.lineEdit_8.text()
+        people = self.lineEdit_9.text()
+        if len(books) == 0:
+            self.textBrowser_6.setText("")
+            self.textBrowser_6.repaint()
+            sleep(0.1)
+            self.textBrowser_6.setText("书籍信息未填写, 请继续输入!")
+            self.textBrowser_6.repaint()
+        else:
+            con = connect(host = 'localhost', 
+                          user = 'root', 
+                          passwd='1qaz!QAZ', 
+                          port= 3306, 
+                          db='library', 
+                          charset='utf8')
+            cur = con.cursor()
+            sql = "select book_id from book_history where people_name = '%s'" % (people)
+            cur.execute(sql)
+            values_have = cur.fetchall()
+            have = []
+            for x in values_have:
+                have.append(x[0])
+            sql = "select * from book_have where id = '%s'" % (books)
+            cur.execute(sql)
+            values_id = cur.fetchall()
+            if books in have:
+                sql = "select datediff(finish_borrow, now()) from book_history where people_name = '%s' and book_id = '%s';" % (self.name, books)
+                cur.execute(sql)
+                values_borrow = cur.fetchall()
+                if values_borrow[0][0] >= 0:
+                    sql = "delete from book_history where people_name = '%s' and book_id = '%s'" % (self.name, books)
+                    cur.execute(sql)
+                    con.commit()
+                    sql = "update book_have set bookget = %d, booklose = %d where id = '%s';" % (values_id[0][5]+1, values_id[0][6]-1, books)
+                    cur.execute(sql)
+                    con.commit()
+                    self.textBrowser_6.setText("")
+                    self.textBrowser_6.repaint()
+                    sleep(0.1)
+                    self.textBrowser_6.setText("还书成功!")
+                    self.textBrowser_6.repaint()
+                else:
+                    self.textBrowser_6.setText("")
+                    self.textBrowser_6.repaint()
+                    sleep(0.1)
+                    self.textBrowser_6.setText("还书失败, 该书已超时, 请到图书管理员处归还并缴纳罚款")
+                    self.textBrowser_6.repaint()
+            else:
+                self.textBrowser_6.setText("")
+                self.textBrowser_6.repaint()
+                sleep(0.1)
+                self.textBrowser_6.setText("该书籍您未借阅, 或书籍信息填写错误, 请重新输入!")
+                self.textBrowser_6.repaint()
+            cur.close()
+            con.close()
 
     def part7(self):
         None  # TODO

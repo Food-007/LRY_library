@@ -32,7 +32,7 @@
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>2</number>
    </property>
    <widget class="QWidget" name="tab">
     <attribute name="title">
@@ -198,7 +198,7 @@ p, li { white-space: pre-wrap; }
       <rect>
        <x>20</x>
        <y>20</y>
-       <width>151</width>
+       <width>101</width>
        <height>31</height>
       </rect>
      </property>
@@ -209,15 +209,15 @@ p, li { white-space: pre-wrap; }
       </font>
      </property>
      <property name="text">
-      <string>书籍条形码/书名:</string>
+      <string>书籍条形码:</string>
      </property>
     </widget>
     <widget class="QLineEdit" name="lineEdit_2">
      <property name="geometry">
       <rect>
-       <x>170</x>
+       <x>130</x>
        <y>20</y>
-       <width>261</width>
+       <width>301</width>
        <height>31</height>
       </rect>
      </property>
@@ -294,15 +294,15 @@ p, li { white-space: pre-wrap; }
       </font>
      </property>
      <property name="text">
-      <string>书籍条形码/书名:</string>
+      <string>书籍条形码:</string>
      </property>
     </widget>
     <widget class="QLineEdit" name="lineEdit_3">
      <property name="geometry">
       <rect>
-       <x>170</x>
+       <x>130</x>
        <y>20</y>
-       <width>261</width>
+       <width>301</width>
        <height>31</height>
       </rect>
      </property>
