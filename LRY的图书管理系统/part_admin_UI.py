@@ -1,6 +1,7 @@
 from pymysql import *
 from datetime import *
 from time import *
+from part_YN import *
 from PyQt5 import QtCore, QtGui, QtWidgets
 class AdminWindow(object):
     def setupUi(self, Form, name):
@@ -829,6 +830,9 @@ class AdminWindow(object):
             sql = "select book_id from book_history where people_name = '%s'" % (people)
             cur.execute(sql)
             values_have = cur.fetchall()
+            sql = "select name from user where phonenumber = '%s';" % (people)
+            cur.execute(sql)
+            values_people = cur.fetchall()
             have = []
             for x in values_have:
                 have.append(x[0])
@@ -836,11 +840,11 @@ class AdminWindow(object):
             cur.execute(sql)
             values_id = cur.fetchall()
             if books in have:
-                sql = "select datediff(finish_borrow, now()) from book_history where people_name = '%s' and book_id = '%s';" % (self.name, books)
+                sql = "select datediff(finish_borrow, now()) from book_history where people_name = '%s' and book_id = '%s';" % (people, books)
                 cur.execute(sql)
                 values_borrow = cur.fetchall()
                 if values_borrow[0][0] >= 0:
-                    sql = "delete from book_history where people_name = '%s' and book_id = '%s'" % (self.name, books)
+                    sql = "delete from book_history where people_name = '%s' and book_id = '%s'" % (people, books)
                     cur.execute(sql)
                     con.commit()
                     sql = "update book_have set bookget = %d, booklose = %d where id = '%s';" % (values_id[0][5]+1, values_id[0][6]-1, books)
@@ -852,16 +856,57 @@ class AdminWindow(object):
                     self.textBrowser_6.setText("还书成功!")
                     self.textBrowser_6.repaint()
                 else:
+                    self.new_window = YN()
+                    self.new_window.move(208, 283)
+                    self.new_window.show()
                     self.textBrowser_6.setText("")
                     self.textBrowser_6.repaint()
                     sleep(0.1)
-                    self.textBrowser_6.setText("还书失败, 该书已超时, 请到图书管理员处归还并缴纳罚款")
+                    self.textBrowser_6.setText("该书已超时, 需缴纳罚款 %.1f元" % (abs(values_borrow[0][0]/10)))
+                    self.textBrowser_6.repaint()
+            elif values_people != ():
+                sql = "select book_id from book_history where people_name = '%s'" % (values_people[0][0])
+                cur.execute(sql)
+                values_have = cur.fetchall()
+                have = []
+                for x in values_have:
+                    have.append(x[0])
+                sql = "select * from book_have where id = '%s'" % (books)
+                cur.execute(sql)
+                values_id = cur.fetchall()
+                if books in have:
+                    sql = "select datediff(finish_borrow, now()) from book_history where people_name = '%s' and book_id = '%s';" % (values_people[0][0], books)
+                    cur.execute(sql)
+                    values_borrow = cur.fetchall()
+                    if values_borrow[0][0] >= 0:
+                        sql = "delete from book_history where people_name = '%s' and book_id = '%s'" % (values_people[0][0], books)
+                        cur.execute(sql)
+                        con.commit()
+                        sql = "update book_have set bookget = %d, booklose = %d where id = '%s';" % (values_id[0][5]+1, values_id[0][6]-1, books)
+                        cur.execute(sql)
+                        con.commit()
+                        self.textBrowser_6.setText("")
+                        self.textBrowser_6.repaint()
+                        sleep(0.1)
+                        self.textBrowser_6.setText("还书成功!")
+                        self.textBrowser_6.repaint()
+                    else:
+                        self.textBrowser_6.setText("")
+                        self.textBrowser_6.repaint()
+                        sleep(0.1)
+                        self.textBrowser_6.setText("还书失败, 该书已超时, 请到图书管理员处归还并缴纳罚款")
+                        self.textBrowser_6.repaint()
+                else:
+                    self.textBrowser_6.setText("")
+                    self.textBrowser_6.repaint()
+                    sleep(0.1)
+                    self.textBrowser_6.setText("该书籍未被该借书人借阅, 或书籍信息填写错误, 请重新输入!")
                     self.textBrowser_6.repaint()
             else:
                 self.textBrowser_6.setText("")
                 self.textBrowser_6.repaint()
                 sleep(0.1)
-                self.textBrowser_6.setText("该书籍您未借阅, 或书籍信息填写错误, 请重新输入!")
+                self.textBrowser_6.setText("该书籍未被该借书人借阅, 或书籍信息填写错误, 请重新输入!")
                 self.textBrowser_6.repaint()
             cur.close()
             con.close()
