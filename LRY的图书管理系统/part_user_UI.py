@@ -244,7 +244,53 @@ class UserWindow(object):
                 self.textBrowser.repaint()
     
     def part2(self):
-        None  # TODO
+        con = connect(host = 'localhost', 
+                      user = 'root', 
+                      passwd='1qaz!QAZ', 
+                      port= 3306, 
+                      db='library', 
+                      charset='utf8')
+        cur = con.cursor()
+        sql = "select book_id, booklose_id from book_history where people_name = '%s';" % (self.name)
+        cur.execute(sql)
+        values_name = cur.fetchall()
+        overover = True
+        l = 0
+        text = ""
+        if values_name != ():
+            for x in values_name:
+                over = True
+                l += 1
+                sql = "select id, name, class, writer from book_have where id = '%s';" % (x[0])
+                cur.execute(sql)
+                books = cur.fetchall()
+                sql = "select datediff(finish_borrow, now()) from library.book_history where people_name = '%s' and book_id = '%s';" % (self.name, books[0][0])
+                cur.execute(sql)
+                book_over = cur.fetchall()
+                if book_over[0][0] < 0:
+                    over = False
+                if over:
+                    text += "书籍条形码: %s, 书籍名称: %s, 书籍类型: %s, 作者: %s, 借书编号: %d, 状态: 未超时, 剩余 %d天应归还\n"  % (books[0][0], books[0][1], books[0][2], books[0][3], x[1], book_over[0][0])
+                else:
+                    text += "书籍条形码: %s, 书籍名称: %s, 书籍类型: %s, 作者: %s, 借书编号: %d, 状态: 已超时, 应缴纳罚款 %.1f元\n"  % (books[0][0], books[0][1], books[0][2], books[0][3], x[1], abs(book_over[0][0]/10))
+                    overover = False
+            cur.close()
+            con.close()
+            if overover:
+                text += "您已借书 %d本, 还能借书 %d本" % (l, 12-l)
+            else:
+                text += "您已借书 %d本, 您有逾期未归还书籍, 不能继续借书, 请尽快去图书管理员处归还书籍" % (l)
+            self.textBrowser_2.setText(" ")
+            self.textBrowser_2.repaint()
+            sleep(0.1)
+            self.textBrowser_2.setText(text)
+            self.textBrowser_2.repaint()
+        else:
+            self.textBrowser_2.setText("")
+            self.textBrowser_2.repaint()
+            sleep(0.1)
+            self.textBrowser_2.setText("您目前没有借阅书籍!")
+            self.textBrowser_2.repaint()
     
     def part3(self):
         books = self.lineEdit_2.text()
@@ -270,7 +316,7 @@ class UserWindow(object):
             same = False
             for x in values_people:
                 num += 1
-                sql = "select datediff(finish_borrow, now()) from library.book_history;"
+                sql = "select datediff(finish_borrow, now()) from library.book_history where people = '%s';" % (self.name)
                 cur.execute(sql)
                 values_borrow = cur.fetchall()
                 if values_borrow[0][0] < 0:

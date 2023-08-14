@@ -516,7 +516,7 @@ class AdminWindow(object):
                 for x in values_id:
                     text += "书籍条形码: %s, 书籍名称: %s, 书籍类型: %s, 作者: %s, 书籍数量: %d, 馆内书籍数量: %d, 被借出书籍数量: %d\n" % (x[0], x[1], x[2], x[3], x[4], x[5], x[6])
                 key = False
-            if values_name != () and key == True:
+            if values_name != ():
                 if text != "":
                     text += "--------------------我是分割线--------------------\n"
                 text += "根据书籍名称查询:\n"
@@ -675,9 +675,56 @@ class AdminWindow(object):
                 self.textBrowser_4.repaint()
 
     def part5(self):
-        None  # TODO
+        con = connect(host = 'localhost', 
+                      user = 'root', 
+                      passwd='1qaz!QAZ', 
+                      port= 3306, 
+                      db='library', 
+                      charset='utf8')
+        cur = con.cursor()
+        sql = "select people_name, booklose_id, book_id, book_name from book_history;"
+        cur.execute(sql)
+        people = cur.fetchall()
+        text = ""
+        over = 0
+        lost = 0
+        if people != ():
+            for x in people:
+                sql = "select datediff(finish_borrow, now()) from book_history where people_name = '%s' and book_id = '%s';" % (x[0], x[2])
+                cur.execute(sql)
+                book_over = cur.fetchall()
+                if book_over[0][0] < 0:
+                    if abs(book_over[0][0]/10) <= 365:
+                        text += "借书人: %s, 书籍条形码: %s, 书籍名称: %s, 借书编号: %d, 状态: 已超时, 应缴纳罚款 %.1f元\n"  % (x[0], x[2], x[3], x[1], abs(book_over[0][0]/10))
+                        over += 1
+                    else:
+                        text += "借书人: %s, 书籍条形码: %s, 书籍名称: %s, 借书编号: %d, 状态: 已丢失, 应缴纳罚款 %.1f元\n"  % (x[0], x[2], x[3], x[1], abs(book_over[0][0]/10))
+                        lost += 1
+            cur.close()
+            con.close()
+            if text == "":
+                self.textBrowser_5.setText("")
+                self.textBrowser_5.repaint()
+                sleep(0.1)
+                self.textBrowser_5.setText("目前没有人借阅书籍超时!")
+                self.textBrowser_5.repaint()
+            else:
+                text += "共计 %d本书超时, %d本书丢失\n丢失书籍可联系有关部门扣除借书人信誉值" % (over, lost)
+                self.textBrowser_5.setText("")
+                self.textBrowser_5.repaint()
+                sleep(0.1)
+                self.textBrowser_5.setText(text)
+                self.textBrowser_5.repaint()
+
+        else:
+            self.textBrowser_5.setText("")
+            self.textBrowser_5.repaint()
+            sleep(0.1)
+            self.textBrowser_5.setText("目前没有人借阅书籍!")
+            self.textBrowser_5.repaint()
 
     def part6(self):
         None  # TODO
+
     def part7(self):
         None  # TODO
